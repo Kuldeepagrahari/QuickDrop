@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Chrome, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../components/Button.jsx";
@@ -71,7 +71,7 @@ const Login = () => {
                     disabled={loading}
                     className="google-button"
                 >
-                    <Chrome size={19} />
+                    <Mail size={19} />
 
                     {loading
                         ? "Signing in..."

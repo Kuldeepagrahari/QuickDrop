@@ -1,23 +1,36 @@
 import express from "express";
-import getRoomHistory from "../controllers/getRoomHistory.js";
-import sendMessage from "../controllers/sendMessage.js";
-import joinRoom from "../controllers/joinRoom.js";
+
+import authMiddleware from "../middleware/authMiddleware.js";
+
 import createRoom from "../controllers/createRoom.js";
+import getRoomHistory from "../controllers/getRoomHistory.js";
+import joinRoom from "../controllers/joinRoom.js";
+import sendMessage from "../controllers/sendMessage.js";
 
 const router = express.Router();
 
+router.post(
+    "/",
+    authMiddleware,
+    createRoom
+);
 
-// CREATE ROOM
-router.post("/", createRoom);
+router.get(
+    "/:roomId",
+    authMiddleware,
+    joinRoom
+);
 
-// JOIN / CHECK ROOM
-router.get("/:roomId", joinRoom);
+router.post(
+    "/:roomId/items",
+    authMiddleware,
+    sendMessage
+);
 
-// SEND TEXT
-router.post("/:roomId/items", sendMessage);
-
-// GET ROOM HISTORY
-router.get("/:roomId/items", getRoomHistory);
-
+router.get(
+    "/:roomId/items",
+    authMiddleware,
+    getRoomHistory
+);
 
 export default router;

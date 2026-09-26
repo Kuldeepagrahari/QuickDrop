@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
     {
-        googleId: {
+        firebaseUid: {
             type: String,
-            unique: true,
-            sparse: true
+            required: true,
+            unique: true
         },
 
         email: {
@@ -18,18 +18,13 @@ const userSchema = new mongoose.Schema(
 
         name: {
             type: String,
-            required: true
+            required: true,
+            trim: true
         },
 
         picture: {
             type: String,
             default: ""
-        },
-
-        provider: {
-            type: String,
-            enum: ["google", "email"],
-            required: true
         }
     },
     {
