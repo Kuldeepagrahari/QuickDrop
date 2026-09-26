@@ -17,6 +17,9 @@ const getCreatedRooms = async (req, res) => {
 
                 return {
                     roomId: room.roomId,
+                    name:
+                        room.name?.trim() ||
+                        `Room ${room.roomId}`,
                     createdAt: room.createdAt,
                     itemCount
                 };

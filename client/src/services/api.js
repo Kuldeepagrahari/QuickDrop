@@ -17,13 +17,13 @@ const getAuthHeaders = async () => {
     };
 };
 
-// CREATE ROOM
-export const createRoom = async () => {
+export const createRoom = async (name = "") => {
     const headers = await getAuthHeaders();
 
     const response = await fetch(`${API_URL}/rooms`, {
         method: "POST",
-        headers
+        headers,
+        body: JSON.stringify({ name })
     });
 
     const data = await response.json();
@@ -37,7 +37,6 @@ export const createRoom = async () => {
     return data;
 };
 
-// GET / CHECK ROOM
 export const getRoom = async (roomId) => {
     const headers = await getAuthHeaders();
 
@@ -60,7 +59,50 @@ export const getRoom = async (roomId) => {
     return data;
 };
 
-// GET ROOM HISTORY
+export const getCreatedRooms = async () => {
+    const headers = await getAuthHeaders();
+
+    const response = await fetch(
+        `${API_URL}/rooms/created`,
+        {
+            method: "GET",
+            headers
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Could not load your rooms"
+        );
+    }
+
+    return data;
+};
+
+export const deleteRoom = async (roomId) => {
+    const headers = await getAuthHeaders();
+
+    const response = await fetch(
+        `${API_URL}/rooms/${roomId}`,
+        {
+            method: "DELETE",
+            headers
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Could not delete room"
+        );
+    }
+
+    return data;
+};
+
 export const getItems = async (roomId) => {
     const headers = await getAuthHeaders();
 
@@ -83,7 +125,6 @@ export const getItems = async (roomId) => {
     return data;
 };
 
-// SEND MESSAGE
 export const sendItem = async (roomId, content) => {
     const headers = await getAuthHeaders();
 
@@ -92,9 +133,7 @@ export const sendItem = async (roomId, content) => {
         {
             method: "POST",
             headers,
-            body: JSON.stringify({
-                content
-            })
+            body: JSON.stringify({ content })
         }
     );
 
@@ -109,7 +148,6 @@ export const sendItem = async (roomId, content) => {
     return data;
 };
 
-// CLEAR ROOM
 export const clearRoom = async (roomId) => {
     const headers = await getAuthHeaders();
 
@@ -131,21 +169,3 @@ export const clearRoom = async (roomId) => {
 
     return data;
 };
-
-export const getCreatedRooms = async () => {
-    const headers = await getAuthHeaders();
-
-    const response = await fetch(`${API_URL}/rooms/created`, {
-        method: "GET",
-        headers
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || "Could not load your rooms");
-    }
-
-    return data;
-};
-

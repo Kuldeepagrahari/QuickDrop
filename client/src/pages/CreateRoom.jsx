@@ -1,31 +1,59 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Copy, Plus } from "lucide-react";
+import {
+    Check,
+    Copy,
+    Plus
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../components/Button.jsx";
 import { createRoom } from "../services/api.js";
-import "./CreateRoom.css"
+import "./CreateRoom.css";
 
 const CreateRoom = () => {
     const navigate = useNavigate();
 
+    const [roomName, setRoomName] = useState("");
     const [roomId, setRoomId] = useState("");
+    const [createdName, setCreatedName] = useState("");
+
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState("");
 
     const handleCreateRoom = async () => {
+        const name = roomName.trim();
+
+        if (!name) {
+            setError("Enter a room name");
+            return;
+        }
+
+        if (name.length > 50) {
+            setError(
+                "Room name must be 50 characters or less"
+            );
+            return;
+        }
+
         try {
             setLoading(true);
             setError("");
 
-            const data = await createRoom();
+            const data = await createRoom(name);
 
             setRoomId(data.roomId);
+            setCreatedName(
+                data.name || name
+            );
         } catch (error) {
             console.error(error);
-            setError(error.message || "Could not create room");
+
+            setError(
+                error.message ||
+                "Could not create room"
+            );
         } finally {
             setLoading(false);
         }
@@ -61,8 +89,8 @@ const CreateRoom = () => {
                 <h1>Create a Room</h1>
 
                 <p>
-                    Create a private room and share its code
-                    with another device.
+                    Create a private room and
+                    give it a name.
                 </p>
 
                 {error && (
@@ -72,22 +100,46 @@ const CreateRoom = () => {
                 )}
 
                 {!roomId ? (
-                    <Button
-                        onClick={handleCreateRoom}
-                        disabled={loading}
-                    >
-                        {loading
-                            ? "Creating..."
-                            : "Create Room"}
-                    </Button>
+                    <>
+                        <input
+                            className="room-name-input"
+                            type="text"
+                            value={roomName}
+                            onChange={(event) =>
+                                setRoomName(
+                                    event.target.value
+                                )
+                            }
+                            placeholder="Enter room name"
+                            maxLength={50}
+                            autoComplete="off"
+                        />
+
+                        <Button
+                            onClick={
+                                handleCreateRoom
+                            }
+                            disabled={loading}
+                        >
+                            {loading
+                                ? "Creating..."
+                                : "Create Room"}
+                        </Button>
+                    </>
                 ) : (
                     <>
+                        <div className="created-room-name">
+                            {createdName}
+                        </div>
+
                         <div className="room-code-box">
                             <span>{roomId}</span>
 
                             <button
                                 onClick={copyRoomId}
                                 className="icon-button"
+                                type="button"
+                                aria-label="Copy room code"
                             >
                                 {copied ? (
                                     <Check size={19} />
@@ -99,7 +151,9 @@ const CreateRoom = () => {
 
                         <Button
                             onClick={() =>
-                                navigate(`/room/${roomId}`)
+                                navigate(
+                                    `/room/${roomId}`
+                                )
                             }
                         >
                             Open Room

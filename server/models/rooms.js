@@ -5,7 +5,16 @@ const roomSchema = new mongoose.Schema(
         roomId: {
             type: String,
             required: true,
-            unique: true
+            unique: true,
+            uppercase: true,
+            trim: true
+        },
+
+        name: {
+            type: String,
+            trim: true,
+            maxlength: 50,
+            default: ""
         },
 
         ownerId: {

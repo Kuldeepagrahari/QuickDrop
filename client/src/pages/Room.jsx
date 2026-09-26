@@ -20,6 +20,7 @@ import {
 import { useAuth } from "../context/AuthContext.jsx";
 import {
     clearRoom,
+    deleteRoom,
     getItems,
     getRoom,
     sendItem
@@ -76,6 +77,7 @@ const Room = () => {
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
     const [clearing, setClearing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const [error, setError] = useState("");
     const [copied, setCopied] = useState("");
@@ -167,6 +169,33 @@ const Room = () => {
         }
     };
 
+    const handleDeleteRoom = async () => {
+        if (!isOwner || deleting) return;
+
+        const confirmed = window.confirm(
+            `Delete "${room?.name || `Room ${room?.roomId || roomId}`}"?\\n\\nAll shared items in this room will also be deleted.`
+        );
+
+        if (!confirmed) return;
+
+        try {
+            setDeleting(true);
+            setError("");
+
+            await deleteRoom(roomId);
+
+            navigate("/join-room");
+        } catch (err) {
+            setError(
+                err.message ||
+                "Could not delete room"
+            );
+        } finally {
+            setDeleting(false);
+            setMenuOpen(false);
+        }
+    };
+
     const handleCopy = async (value, key) => {
         try {
             await navigator.clipboard.writeText(value);
@@ -252,7 +281,9 @@ const Room = () => {
                     </div>
 
                     <div className="room-heading-row">
-                        <h1>{room?.roomId || roomId}</h1>
+                        <h1>
+                            {room?.name || `Room ${room?.roomId || roomId}`}
+                        </h1>
 
                         <button
                             className="room-code-copy"
@@ -271,6 +302,8 @@ const Room = () => {
                     </div>
 
                     <p className="room-subtitle">
+                        Room code: {room?.roomId || roomId}
+                        <br />
                         Share text, links and code instantly with everyone in
                         this room.
                     </p>
@@ -319,16 +352,29 @@ const Room = () => {
                                     </button>
 
                                     {isOwner && (
-                                        <button
-                                            className="danger-menu-item"
-                                            onClick={handleClear}
-                                            disabled={clearing}
-                                        >
-                                            <Trash2 size={15} />
-                                            {clearing
-                                                ? "Clearing..."
-                                                : "Clear shared items"}
-                                        </button>
+                                        <>
+                                            <button
+                                                className="danger-menu-item"
+                                                onClick={handleClear}
+                                                disabled={clearing || deleting}
+                                            >
+                                                <Trash2 size={15} />
+                                                {clearing
+                                                    ? "Clearing..."
+                                                    : "Clear shared items"}
+                                            </button>
+
+                                            <button
+                                                className="danger-menu-item"
+                                                onClick={handleDeleteRoom}
+                                                disabled={clearing || deleting}
+                                            >
+                                                <Trash2 size={15} />
+                                                {deleting
+                                                    ? "Deleting room..."
+                                                    : "Delete room"}
+                                            </button>
+                                        </>
                                     )}
                                 </motion.div>
                             )}

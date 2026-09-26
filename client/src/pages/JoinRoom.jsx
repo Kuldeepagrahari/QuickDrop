@@ -1,20 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useState, useMemo, useEffect} from "react"
 import { motion } from "framer-motion";
 import {
     ArrowRight,
+    CalendarDays,
+    Check,
     Clock3,
     Copy,
     DoorOpen,
     History,
+    Plus,
     Search,
-    Users,
-    Check
+    Share2,
+    Trash2
 } from "lucide-react";
 
 import "./JoinRoom.css"
 
-import { getCreatedRooms } from "../services/api.js";
+import {
+    getCreatedRooms,
+    deleteRoom
+} from "../services/api.js";
+
 
 const formatDate = (value) => {
     if (!value) return "Recently";
@@ -28,6 +34,7 @@ const formatDate = (value) => {
         year: "numeric"
     });
 };
+import { useNavigate } from "react-router-dom";
 
 const JoinRoom = () => {
     const navigate = useNavigate();
@@ -95,6 +102,34 @@ const JoinRoom = () => {
             }, 1500);
         } catch {
             setError("Could not copy room code");
+        }
+    };
+
+    const handleDelete = async (event, room) => {
+        event.stopPropagation();
+    
+        const confirmed = window.confirm(
+            `Delete "${room.name || `Room ${room.roomId}`}"?\n\nAll shared items in this room will also be deleted.`
+        );
+    
+        if (!confirmed) return;
+    
+        try {
+            setError("");
+    
+            await deleteRoom(room.roomId);
+    
+            setRooms((currentRooms) =>
+                currentRooms.filter(
+                    (currentRoom) =>
+                        currentRoom.roomId !== room.roomId
+                )
+            );
+        } catch (err) {
+            setError(
+                err.message ||
+                "Could not delete room"
+            );
         }
     };
 
@@ -168,7 +203,7 @@ const JoinRoom = () => {
                     <div>
                         <div className="previous-title">
                             <History size={17} />
-                            <h2>Previous rooms</h2>
+                            <h2>Your rooms</h2>
                             <span>{rooms.length}</span>
                         </div>
                         <p>Rooms you've created with this account.</p>
@@ -188,13 +223,13 @@ const JoinRoom = () => {
 
                         <h3>
                             {rooms.length === 0
-                                ? "No previous rooms"
+                                ? "No rooms yet"
                                 : "No matching rooms"}
                         </h3>
 
                         <p>
                             {rooms.length === 0
-                                ? "Join a room once and it will appear here for quick access."
+                                ? "Create a room once and it will appear here for quick access."
                                 : "Try a different room code."}
                         </p>
                     </div>
@@ -220,30 +255,27 @@ const JoinRoom = () => {
 
                                     <div className="previous-room-info">
                                         <strong>
-                                            {room.isOwner
-                                                ? "Your room"
-                                                : "Created room"}
+                                            {room.name || `Room ${room.roomId}`}
                                         </strong>
 
                                         <span>
                                             <Clock3 size={12} />
-                                            {formatDate(room.lastAccessedAt)}
+                                            Created {formatDate(room.createdAt)}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="previous-room-actions">
-                                    <div className="previous-room-members">
-                                        <Users size={13} />
-                                        <span>
-                                            {room.memberCount || 1}
-                                        </span>
+                                    <div className="previous-room-members" title="Shared items">
+                                        <span>{room.itemCount ?? 0}</span>
+                                        <span>items</span>
                                     </div>
 
                                     <button
                                         className="room-copy-button"
                                         type="button"
                                         title="Copy room code"
+                                        aria-label="Copy room code"
                                         onClick={(event) => {
                                             event.stopPropagation();
                                             handleCopy(room.roomId);
@@ -254,6 +286,18 @@ const JoinRoom = () => {
                                         ) : (
                                             <Copy size={14} />
                                         )}
+                                    </button>
+
+                                    <button
+                                        className="room-copy-button"
+                                        type="button"
+                                        title="Delete room"
+                                        aria-label="Delete room"
+                                        onClick={(event) =>
+                                            handleDelete(event, room)
+                                        }
+                                    >
+                                        <Trash2 size={14} />
                                     </button>
 
                                     <ArrowRight

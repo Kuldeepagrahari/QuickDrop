@@ -469,3 +469,63 @@
         display: none;
     }
 }
+.created-room-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+}
+
+.created-room-delete {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 75, 75, 0.12);
+    border-radius: 9px;
+
+    color: #a66a6a;
+    background: rgba(255, 75, 75, 0.035);
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.created-room-delete:hover {
+    color: #ff7b7b;
+    background: rgba(255, 75, 75, 0.09);
+    border-color: rgba(255, 75, 75, 0.25);
+}
+
+.created-room-delete:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 640px) {
+    .created-room-card {
+        align-items: flex-start;
+    }
+
+    .created-room-left {
+        min-width: 0;
+    }
+
+    .created-room-actions {
+        gap: 5px;
+    }
+
+    .created-room-code {
+        width: 68px;
+    }
+
+    .open-room-button {
+        display: none;
+    }
+}
