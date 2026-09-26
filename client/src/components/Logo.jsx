@@ -1,5 +1,6 @@
 import { Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import "./Logo.css";
 
 function Logo() {
     return (

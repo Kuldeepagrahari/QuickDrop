@@ -1,0 +1,92 @@
+/* =========================================================
+   QUICKDROP ANIMATED BACKGROUND
+   Classes synchronized with AnimatedBackground.jsx
+   ========================================================= */
+
+.background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: -10;
+
+    background:
+        radial-gradient(
+            circle at 50% 15%,
+            rgba(90, 70, 255, 0.16),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(0, 184, 255, 0.08),
+            transparent 30%
+        ),
+        #07070a;
+
+    pointer-events: none;
+}
+
+.orb {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: 0.32;
+    pointer-events: none;
+}
+
+.orb-one {
+    top: -170px;
+    left: -120px;
+    background: #6048ff;
+}
+
+.orb-two {
+    right: -120px;
+    bottom: -170px;
+    background: #00b8ff;
+}
+
+.grid-overlay {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+        );
+
+    background-size: 50px 50px;
+
+    mask-image: radial-gradient(
+        ellipse at center,
+        black,
+        transparent 82%
+    );
+
+    -webkit-mask-image: radial-gradient(
+        ellipse at center,
+        black,
+        transparent 82%
+    );
+
+    pointer-events: none;
+}
+
+@media (max-width: 700px) {
+    .orb {
+        width: 280px;
+        height: 280px;
+        filter: blur(85px);
+    }
+
+    .grid-overlay {
+        background-size: 40px 40px;
+    }
+}

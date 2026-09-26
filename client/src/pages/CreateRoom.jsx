@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import Button from "../components/Button.jsx";
 import { createRoom } from "../services/api.js";
+import "./CreateRoom.css"
 
 const CreateRoom = () => {
     const navigate = useNavigate();

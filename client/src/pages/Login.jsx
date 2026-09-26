@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import Button from "../components/Button.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import "./Login.css"
 
 const Login = () => {
     const { loginWithGoogle } = useAuth();

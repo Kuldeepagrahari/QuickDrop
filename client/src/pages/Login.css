@@ -1,0 +1,157 @@
+/* =========================================================
+   QUICKDROP — LOGIN
+   ========================================================= */
+
+.auth-page {
+    width: min(1100px, 92%);
+    min-height: calc(100vh - 72px);
+    margin: 0 auto;
+    padding: 55px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    position: relative;
+    overflow: hidden;
+    width: min(440px, 100%);
+    padding: 39px 38px 34px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.085);
+    border-radius: 25px;
+    background:
+        radial-gradient(circle at 50% -10%, rgba(105, 90, 255, 0.12), transparent 40%),
+        rgba(15, 15, 20, 0.78);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    box-shadow:
+        0 30px 100px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.auth-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(135, 120, 255, 0.45),
+        transparent
+    );
+}
+
+.auth-icon,
+.page-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(135, 120, 255, 0.17);
+    border-radius: 16px;
+    color: #a49bff;
+    background:
+        linear-gradient(135deg, rgba(105, 90, 255, 0.16), rgba(59, 130, 246, 0.07));
+    box-shadow: 0 14px 35px rgba(73, 61, 190, 0.12);
+}
+
+.auth-card h1 {
+    margin-top: 23px;
+    color: #f5f5f8;
+    font-size: 27px;
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+.auth-card > p {
+    width: min(340px, 100%);
+    margin: 11px auto 27px;
+    color: #858590;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.auth-card .btn {
+    width: 100%;
+    min-height: 47px;
+}
+
+.google-button {
+    background: linear-gradient(135deg, #6d5eea, #3b82f6);
+    box-shadow: 0 13px 32px rgba(76, 76, 220, 0.22);
+}
+
+.google-button:hover:not(:disabled) {
+    box-shadow: 0 17px 38px rgba(76, 76, 220, 0.3);
+}
+
+.email-button {
+    margin-top: 0;
+}
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 21px 0;
+    color: #555660;
+    font-size: 11px;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.065);
+}
+
+.auth-note {
+    display: block;
+    margin-top: 13px;
+    color: #5d5e68;
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+.auth-card .error-message {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid rgba(248, 113, 113, 0.15);
+    border-radius: 10px;
+    color: #f28a8a;
+    background: rgba(248, 113, 113, 0.055);
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+@media (max-width: 700px) {
+    .auth-page {
+        width: min(92%, 460px);
+        padding: 35px 0;
+    }
+
+    .auth-card {
+        padding: 31px 24px 28px;
+        border-radius: 21px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card h1 {
+        font-size: 24px;
+    }
+
+    .auth-icon,
+    .page-icon {
+        width: 50px;
+        height: 50px;
+    }
+}

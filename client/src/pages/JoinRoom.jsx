@@ -1,94 +1,271 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { LogIn } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+    ArrowRight,
+    Clock3,
+    Copy,
+    DoorOpen,
+    History,
+    Search,
+    Users,
+    Check
+} from "lucide-react";
 
-import Button from "../components/Button.jsx";
-import { getRoom } from "../services/api.js";
+import "./JoinRoom.css"
+
+import { getCreatedRooms } from "../services/api.js";
+
+const formatDate = (value) => {
+    if (!value) return "Recently";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Recently";
+
+    return date.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
+};
 
 const JoinRoom = () => {
     const navigate = useNavigate();
 
     const [roomId, setRoomId] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [rooms, setRooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [joining, setJoining] = useState(false);
     const [error, setError] = useState("");
+    const [copied, setCopied] = useState("");
 
-    const handleJoinRoom = async (event) => {
+    useEffect(() => {
+        const loadRooms = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const data = await getCreatedRooms();
+                setRooms(Array.isArray(data) ? data : []);
+            } catch (err) {
+                setError(err.message || "Could not load your previous rooms");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadRooms();
+    }, []);
+
+    const normalizedInput = roomId.trim().toUpperCase();
+
+    const filteredRooms = useMemo(() => {
+        if (!normalizedInput) return rooms;
+
+        return rooms.filter((room) =>
+            room.roomId?.toUpperCase().includes(normalizedInput)
+        );
+    }, [rooms, normalizedInput]);
+
+    const handleJoin = async (event) => {
         event.preventDefault();
 
-        const code = roomId.trim().toUpperCase();
-
-        if (!code) {
+        if (!normalizedInput) {
             setError("Enter a room code");
             return;
         }
 
         try {
-            setLoading(true);
+            setJoining(true);
             setError("");
+            navigate(`/room/${normalizedInput}`);
+        } catch (err) {
+            setError(err.message || "Could not join room");
+            setJoining(false);
+        }
+    };
 
-            await getRoom(code);
+    const handleCopy = async (id) => {
+        try {
+            await navigator.clipboard.writeText(id);
+            setCopied(id);
 
-            navigate(`/room/${code}`);
-        } catch (error) {
-            console.error(error);
-            setError(error.message || "Room not found");
-        } finally {
-            setLoading(false);
+            window.setTimeout(() => {
+                setCopied("");
+            }, 1500);
+        } catch {
+            setError("Could not copy room code");
         }
     };
 
     return (
-        <main className="center-page">
-            <motion.div
-                className="room-card"
-                initial={{
-                    opacity: 0,
-                    y: 25
-                }}
-                animate={{
-                    opacity: 1,
-                    y: 0
-                }}
+        <main className="page join-page-redesign">
+            <motion.section
+                className="join-hero"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
             >
-                <div className="page-icon">
-                    <LogIn size={24} />
+                <div className="join-icon">
+                    <DoorOpen size={23} />
                 </div>
 
-                <h1>Join a Room</h1>
+                <div className="join-eyebrow">
+                    <span />
+                    QUICKDROP ROOMS
+                </div>
 
+                <h1>Join a room</h1>
                 <p>
-                    Enter the room code shared with you.
+                    Enter a room code or reopen one you've used before.
+                    Everything is already waiting for you.
                 </p>
+            </motion.section>
 
-                <form onSubmit={handleJoinRoom}>
+            <motion.form
+                className="join-form-redesign"
+                onSubmit={handleJoin}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+            >
+                <div className="join-input-wrap">
+                    <Search size={17} />
                     <input
-                        type="text"
                         value={roomId}
                         onChange={(event) =>
-                            setRoomId(event.target.value)
+                            setRoomId(event.target.value.toUpperCase())
                         }
-                        placeholder="e.g. A7F29C"
+                        placeholder="Enter room code"
                         maxLength={6}
-                        className="room-input"
+                        autoComplete="off"
+                        spellCheck="false"
                     />
-
-                    {error && (
-                        <div className="error-message">
-                            {error}
-                        </div>
+                    {roomId && (
+                        <button
+                            type="button"
+                            className="join-clear-input"
+                            onClick={() => setRoomId("")}
+                        >
+                            ×
+                        </button>
                     )}
+                </div>
 
-                    <Button
-                        type="submit"
-                        disabled={loading}
-                    >
-                        {loading
-                            ? "Joining..."
-                            : "Join Room"}
-                    </Button>
-                </form>
-            </motion.div>
+                <button
+                    className="join-submit-button"
+                    type="submit"
+                    disabled={!normalizedInput || joining}
+                >
+                    {joining ? "Opening..." : "Join room"}
+                    <ArrowRight size={16} />
+                </button>
+            </motion.form>
+
+            {error && <div className="join-error">{error}</div>}
+
+            <section className="previous-rooms-section">
+                <div className="previous-rooms-header">
+                    <div>
+                        <div className="previous-title">
+                            <History size={17} />
+                            <h2>Previous rooms</h2>
+                            <span>{rooms.length}</span>
+                        </div>
+                        <p>Rooms you've created with this account.</p>
+                    </div>
+                </div>
+
+                {loading ? (
+                    <div className="rooms-loading">
+                        <div className="loader" />
+                        <span>Loading your rooms...</span>
+                    </div>
+                ) : filteredRooms.length === 0 ? (
+                    <div className="no-rooms-card">
+                        <div className="no-rooms-icon">
+                            <DoorOpen size={21} />
+                        </div>
+
+                        <h3>
+                            {rooms.length === 0
+                                ? "No previous rooms"
+                                : "No matching rooms"}
+                        </h3>
+
+                        <p>
+                            {rooms.length === 0
+                                ? "Join a room once and it will appear here for quick access."
+                                : "Try a different room code."}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="previous-rooms-list">
+                        {filteredRooms.map((room, index) => (
+                            <motion.article
+                                className="previous-room-card"
+                                key={room.roomId}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                    delay: Math.min(index * 0.035, 0.2)
+                                }}
+                                onClick={() =>
+                                    navigate(`/room/${room.roomId}`)
+                                }
+                            >
+                                <div className="previous-room-main">
+                                    <div className="previous-room-code">
+                                        {room.roomId}
+                                    </div>
+
+                                    <div className="previous-room-info">
+                                        <strong>
+                                            {room.isOwner
+                                                ? "Your room"
+                                                : "Created room"}
+                                        </strong>
+
+                                        <span>
+                                            <Clock3 size={12} />
+                                            {formatDate(room.lastAccessedAt)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="previous-room-actions">
+                                    <div className="previous-room-members">
+                                        <Users size={13} />
+                                        <span>
+                                            {room.memberCount || 1}
+                                        </span>
+                                    </div>
+
+                                    <button
+                                        className="room-copy-button"
+                                        type="button"
+                                        title="Copy room code"
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            handleCopy(room.roomId);
+                                        }}
+                                    >
+                                        {copied === room.roomId ? (
+                                            <Check size={14} />
+                                        ) : (
+                                            <Copy size={14} />
+                                        )}
+                                    </button>
+
+                                    <ArrowRight
+                                        className="room-open-arrow"
+                                        size={16}
+                                    />
+                                </div>
+                            </motion.article>
+                        ))}
+                    </div>
+                )}
+            </section>
         </main>
     );
 };

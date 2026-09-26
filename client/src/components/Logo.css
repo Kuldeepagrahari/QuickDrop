@@ -1,0 +1,78 @@
+/* =========================================================
+   QUICKDROP LOGO
+   Classes synchronized with Logo.jsx
+   ========================================================= */
+
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+
+    cursor: default;
+    user-select: none;
+}
+
+.logo-icon {
+    position: relative;
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    border-radius: 11px;
+    color: #ffffff;
+
+    background: linear-gradient(
+        135deg,
+        #7868ff 0%,
+        #4b8dff 100%
+    );
+
+    box-shadow:
+        0 8px 25px rgba(76, 76, 220, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+
+    overflow: hidden;
+}
+
+.logo-icon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.22),
+        transparent 45%
+    );
+
+    pointer-events: none;
+}
+
+.logo-icon svg {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 700px) {
+    .logo {
+        font-size: 16px;
+        gap: 8px;
+    }
+
+    .logo-icon {
+        width: 33px;
+        height: 33px;
+        border-radius: 10px;
+    }
+}

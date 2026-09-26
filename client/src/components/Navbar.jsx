@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { LogOut, Zap } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext.jsx";
+import "./Navbar.css";
 
 const Navbar = () => {
     const { user, logout } = useAuth();

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import "./AnimatedBackground.css";
 
 function AnimatedBackground() {
     return (

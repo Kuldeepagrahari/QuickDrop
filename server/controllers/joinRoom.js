@@ -1,4 +1,5 @@
 import Room from "../models/rooms.js";
+import User from "../models/users.js";
 
 const joinRoom = async (req, res) => {
     try {
@@ -14,11 +15,21 @@ const joinRoom = async (req, res) => {
             });
         }
 
+        const owner = await User.findById(
+            room.ownerId
+        ).select("firebaseUid name picture");
+
         return res.json({
-            roomId: room.roomId
+            roomId: room.roomId,
+            ownerId: owner?.firebaseUid || null,
+            ownerName: owner?.name || "Unknown",
+            ownerPicture: owner?.picture || ""
         });
     } catch (error) {
-        console.error("Join room error:", error);
+        console.error(
+            "Join room error:",
+            error
+        );
 
         return res.status(500).json({
             message: "Could not find room"
